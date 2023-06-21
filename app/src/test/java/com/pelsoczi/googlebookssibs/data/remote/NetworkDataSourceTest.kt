@@ -9,6 +9,7 @@ import org.junit.After
 import org.junit.Before
 import org.junit.Test
 import retrofit2.Retrofit
+import retrofit2.adapter.rxjava3.RxJava3CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
 import java.io.BufferedReader
 import java.io.InputStreamReader
@@ -23,6 +24,7 @@ class NetworkDataSourceTest {
         .baseUrl(mockWebServer.url("/"))
         .client(httpClient)
         .addConverterFactory(GsonConverterFactory.create())
+        .addCallAdapterFactory(RxJava3CallAdapterFactory.create())
         .build()
         .create(BooksApiService::class.java)
 
@@ -49,8 +51,9 @@ class NetworkDataSourceTest {
         mockWebServer.enqueue(response)
 
         // when
-        val result = networkDataSource.fetch()
+        val result = networkDataSource.fetch().blockingGet()
         // then
+        networkDataSource.fetch()
         assertThat(result.isSuccessful).isTrue()
         assertThat(result.code()).isEqualTo(200)
     }
@@ -63,7 +66,7 @@ class NetworkDataSourceTest {
             .setBody(readJsonFile("400-invalid-param.json"))
         mockWebServer.enqueue(response)
         // when
-        val result = networkDataSource.fetch()
+        val result = networkDataSource.fetch().blockingGet()
         // then
         assertThat(result.isSuccessful).isFalse()
         assertThat(result.code()).isEqualTo(400)
@@ -77,7 +80,7 @@ class NetworkDataSourceTest {
             .setBody(readJsonFile("403-disabled-api.json"))
         mockWebServer.enqueue(response)
         // when
-        val result = networkDataSource.fetch()
+        val result = networkDataSource.fetch().blockingGet()
         // then
         assertThat(result.isSuccessful).isFalse()
         assertThat(result.code()).isEqualTo(403)
@@ -91,7 +94,7 @@ class NetworkDataSourceTest {
             .setBody(readJsonFile("400-api-key-invalid.json"))
         mockWebServer.enqueue(response)
         // when
-        val result = networkDataSource.fetch()
+        val result = networkDataSource.fetch().blockingGet()
         // then
         assertThat(result.isSuccessful).isFalse()
         assertThat(result.code()).isEqualTo(400)

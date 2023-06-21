@@ -1,5 +1,7 @@
 package com.pelsoczi.googlebookssibs.data.remote
 
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.schedulers.Schedulers
 import retrofit2.Response
 import javax.inject.Inject
 
@@ -7,9 +9,9 @@ class NetworkDataSource @Inject constructor(
     private val apiService: BooksApiService
 ) {
 
-
-    suspend fun fetch(): Response<BooksApiResponse> {
+    fun fetch(): Single<Response<BooksApiResponse>> {
         return apiService.search()
+            .observeOn(Schedulers.io())
 //    val items = mutableListOf<Items>()
 //        repeat(20) { i ->
 //            withContext(currentCoroutineContext()) {
