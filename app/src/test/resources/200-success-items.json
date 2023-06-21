@@ -1,0 +1,81 @@
+{
+  "kind": "books#volumes",
+  "totalItems": 531,
+  "items": [
+    {
+      "kind": "books#volume",
+      "id": "6DQACwAAQBAJ",
+      "etag": "Bz+FLYixa+c",
+      "selfLink": "https://www.googleapis.com/books/v1/volumes/6DQACwAAQBAJ",
+      "volumeInfo": {
+        "title": "Google Android 5ª edição",
+        "subtitle": "Aprenda a criar aplicações para dispositivos móveis com o Android SDK",
+        "authors": [
+          "Ricardo R. Lecheta"
+        ],
+        "publisher": "Novatec Editora",
+        "publishedDate": "2015-11-23",
+        "description": "O Android é atualmente o sistema operacional móvel mais utilizado no mundo e está disponível para diversas plataformas, como smartphones, tablets, TV (Google TV), relógios (Android Wear), óculos (Google Glass) e carros (Android Auto). Este livro convida o leitor a mergulhar no incrível mundo do Android, onde a imaginação é o limite. A obra traz todos os passos necessários para desenvolver aplicativos para smartphones, tablets e relógios, desde o básico – sobre a instalação do emulador e configuração do ambiente de desenvolvimento no Android Studio – até aplicações que utilizem recursos avançados, como mapas, localização por GPS, multimídia, consulta em web services, persistência em banco de dados, sensores, execução de serviços em segundo plano e muito mais. Será desenvolvido um aplicativo completo passo a passo, conforme as boas práticas de desenvolvimento e interface e utilizando conceitos do Material Design. Para mais informações, visite o site do livro www.livroandroid.com.br.",
+        "industryIdentifiers": [
+          {
+            "type": "ISBN_13",
+            "identifier": "9788575224687"
+          },
+          {
+            "type": "ISBN_10",
+            "identifier": "8575224689"
+          }
+        ],
+        "readingModes": {
+          "text": false,
+          "image": true
+        },
+        "pageCount": 57,
+        "printType": "BOOK",
+        "categories": [
+          "Computers"
+        ],
+        "maturityRating": "NOT_MATURE",
+        "allowAnonLogging": false,
+        "contentVersion": "1.1.1.0.preview.1",
+        "panelizationSummary": {
+          "containsEpubBubbles": false,
+          "containsImageBubbles": false
+        },
+        "imageLinks": {
+          "smallThumbnail": "http://books.google.com/books/content?id=6DQACwAAQBAJ&printsec=frontcover&img=1&zoom=5&edge=curl&source=gbs_api",
+          "thumbnail": "http://books.google.com/books/content?id=6DQACwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api"
+        },
+        "language": "pt-BR",
+        "previewLink": "http://books.google.pt/books?id=6DQACwAAQBAJ&printsec=frontcover&dq=android&hl=&cd=1&source=gbs_api",
+        "infoLink": "http://books.google.pt/books?id=6DQACwAAQBAJ&dq=android&hl=&source=gbs_api",
+        "canonicalVolumeLink": "https://books.google.com/books/about/Google_Android_5%C2%AA_edi%C3%A7%C3%A3o.html?hl=&id=6DQACwAAQBAJ"
+      },
+      "saleInfo": {
+        "country": "PT",
+        "saleability": "NOT_FOR_SALE",
+        "isEbook": false
+      },
+      "accessInfo": {
+        "country": "PT",
+        "viewability": "PARTIAL",
+        "embeddable": true,
+        "publicDomain": false,
+        "textToSpeechPermission": "ALLOWED",
+        "epub": {
+          "isAvailable": false
+        },
+        "pdf": {
+          "isAvailable": true,
+          "acsTokenLink": "http://books.google.pt/books/download/Google_Android_5%C2%AA_edi%C3%A7%C3%A3o-sample-pdf.acsm?id=6DQACwAAQBAJ&format=pdf&output=acs4_fulfillment_token&dl_type=sample&source=gbs_api"
+        },
+        "webReaderLink": "http://play.google.com/books/reader?id=6DQACwAAQBAJ&hl=&source=gbs_api",
+        "accessViewStatus": "SAMPLE",
+        "quoteSharingAllowed": false
+      },
+      "searchInfo": {
+        "textSnippet": "O Android é atualmente o sistema operacional móvel mais utilizado no mundo e está disponível para diversas plataformas, como smartphones, tablets, TV (Google TV), relógios (Android Wear), óculos (Google Glass) e carros (Android Auto)."
+      }
+    }
+  ]
+}
