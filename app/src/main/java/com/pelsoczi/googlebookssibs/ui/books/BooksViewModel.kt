@@ -1,8 +1,15 @@
 package com.pelsoczi.googlebookssibs.ui.books
 
 import androidx.lifecycle.ViewModel
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.PagingSource
+import androidx.paging.PagingState
 import com.pelsoczi.googlebookssibs.data.Repository
+import com.pelsoczi.googlebookssibs.data.remote.BookItem
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
 @HiltViewModel
@@ -10,6 +17,32 @@ class BooksViewModel @Inject constructor(
     private val repository: Repository
 ) : ViewModel() {
 
+    private val pager: Pager<Int, BookItem> = Pager(
+        config = PagingConfig(pageSize = 20),
+        pagingSourceFactory = {
+            PagingSourceController(repository)
+        },
+    )
 
+    val viewState: Flow<PagingData<BookItem>> = pager.flow
+
+    internal class PagingSourceController(
+        private val repository: Repository,
+    ) : PagingSource<Int, BookItem>() {
+
+        /** Fetch the data from index 0 if pull to swipe is implemented */
+        override fun getRefreshKey(state: PagingState<Int, BookItem>): Int = 0
+
+        /**
+         * Fetches the data from the repository and returns the load result, or invalidates
+         * from loading further data if params.key is null - we have reached end of list
+         * from the server.
+         */
+        override suspend fun load(params: LoadParams<Int>): LoadResult<Int, BookItem> {
+            val indexKey = params.key ?: return LoadResult.Invalid()
+            val loadResult = repository.loadBooks(index = indexKey)
+            return loadResult
+        }
+    }
 
 }
