@@ -10,8 +10,7 @@ interface BooksApiService {
     @GET("volumes")
     suspend fun search(
         @Query("q") query: String = "android",
-        @Query("maxResult") max: Int = 40,
-        @Query("startIndex") start: Int = 0,
+        @Query("startIndex") startIndex: Int = 0,
     ): Response<BooksApiResponse>
 
 }
