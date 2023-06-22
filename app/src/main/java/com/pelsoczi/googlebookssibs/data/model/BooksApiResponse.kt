@@ -7,6 +7,6 @@ data class BooksApiResponse(
 
     @SerializedName("kind") var kind: String? = null,
     @SerializedName("totalItems") var totalItems: Int? = null,
-    @SerializedName("items") var items: ArrayList<Items> = arrayListOf()
+    @SerializedName("items") var items: ArrayList<BookItem> = arrayListOf()
 
 )

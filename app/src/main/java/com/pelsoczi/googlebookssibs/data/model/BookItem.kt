@@ -3,7 +3,7 @@ package com.pelsoczi.googlebookssibs.data.remote
 import com.google.gson.annotations.SerializedName
 
 
-data class Items(
+data class BookItem(
 
     @SerializedName("kind") var kind: String? = null,
     @SerializedName("id") var id: String? = null,
