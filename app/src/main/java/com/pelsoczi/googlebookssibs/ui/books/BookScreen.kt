@@ -1,5 +1,6 @@
 package com.pelsoczi.googlebookssibs.ui.books
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,21 +32,29 @@ import com.pelsoczi.googlebookssibs.ui.theme.Typography
 
 @Composable
 fun BooksScreen(
-    viewModel: BooksViewModel = hiltViewModel()
+    viewModel: BooksViewModel = hiltViewModel(),
+    onClickBook: (book: Book) -> Unit,
 ) {
     val books = viewModel.viewState.collectAsLazyPagingItems()
     BooksScreen(
         books = books,
+        onClickBook = { onClickBook(it) }
     )
 }
 
 @Composable
 private fun BooksScreen(
-    books: LazyPagingItems<Book>
+    books: LazyPagingItems<Book>,
+    onClickBook: (book: Book) -> Unit,
 ) {
     LazyColumn(Modifier.fillMaxSize()) {
         itemsIndexed(books.itemSnapshotList.filterNotNull()) { index, book ->
-            BookViewHolder(book = book)
+            BookViewHolder(
+                book = book,
+                onClickBook = {
+                    onClickBook(it)
+                },
+            )
             Divider()
         }
     }
@@ -53,13 +62,17 @@ private fun BooksScreen(
 
 @Composable
 private fun BookViewHolder(
-    book: Book
+    book: Book,
+    onClickBook: (book: Book) -> Unit
 ) {
     Row(
         Modifier
             .fillMaxWidth()
             .height(200.dp)
             .padding(8.dp)
+            .clickable {
+                onClickBook(book)
+            }
     ) {
         Column(
             modifier = Modifier
@@ -71,8 +84,9 @@ private fun BookViewHolder(
             Text(
                 text = book.title,
                 style = Typography.titleLarge,
-                fontWeight = FontWeight.Light,
+                fontWeight = FontWeight.Medium,
                 maxLines = 3,
+                color = Color.Blue,
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -115,12 +129,18 @@ fun BooksScreenPreview() {
                 description = "Develop vision-aware and intelligent Android applications with the robust OpenCV library About This Book This is the most up-to-date book on OpenCV Android programming on the market at the moment. There is no direct competition for our title. Based on a technology that is increasing in popularity, proven by activity in forums related to this topic. This book uniquely covers applications such as the Panoramic viewer and Automatic Selfie, among others. Who This Book Is For If you are an Android developer and want to know how to implement vision-aware applications using OpenCV, then this book is definitely for you. It would be very helpful if you understand the basics of image processing and computer vision, but no prior experience is required What You Will Learn Identify and install all the elements needed to start building vision-aware Android applications Explore image representation, colored and gray scale Recognize and apply convolution operations and filtering to deal with noisy data Use different shape analysis techniques Extract and identify interest points in an image Understand and perform object detection Run native computer vision algorithms and gain performance boosts In Detail Starting from the basics of computer vision and OpenCV, we'll take you all the way to creating exciting applications. You will discover that, though computer vision is a challenging subject, the ideas and algorithms used are simple and intuitive, and you will appreciate the abstraction layer that OpenCV uses to do the heavy lifting for you. Packed with many examples, the book will help you understand the main data structures used within OpenCV, and how you can use them to gain performance boosts. Next we will discuss and use several image processing algorithms such as histogram equalization, filters, and color space conversion. You then will learn about image gradients and how they are used in many shape analysis techniques such as edge detection, Hough Line Transform, and Hough Circle Transform. In addition to using shape analysis to find things in images, you will learn how to describe objects in images in a more robust way using different feature detectors and descriptors. By the end of this book, you will be able to make intelligent decisions using the famous Adaboost learning algorithm. Style and approach An easy-to-follow tutorial packed with hands-on examples. Each topic is explained and placed in context, and the book supplies full details of the concepts used for added proficiency.",
                 published = "2015-12-15",
                 publisher = "Packt Publishing Ltd",
+                pageCount = 202,
+                rating = 4.5,
+                reviews = 5,
                 thumbnail = "http://books.google.com/books/content?id=cCHlCwAAQBAJ&printsec=frontcover&img=1&zoom=1&edge=curl&source=gbs_api",
                 buyLink = "https://play.google.com/store/books/details?id=cCHlCwAAQBAJ&rdid=book-cCHlCwAAQBAJ&rdot=1&source=gbs_api",
                 amount = 21.19,
                 currency = "EUR",
             )
-            BookViewHolder(book = book)
+            BookViewHolder(
+                book = book,
+                onClickBook = {},
+            )
         }
     }
 }

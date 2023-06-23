@@ -30,7 +30,7 @@ class RepositoryTest {
     @Test
     fun `api success and items returned by endpoint`() = runTest {
         // given
-        val books = arrayListOf(BookItem())
+        val books = arrayListOf(BookItem(id = "6DiXzQEACAAJ"))
         val body = mockk<BooksApiResponse>() {
             coEvery { items } returns books
         }
@@ -44,6 +44,7 @@ class RepositoryTest {
         val result = repository.loadBooks(0)
         // then
         assertThat(result is PagingSource.LoadResult.Page).isTrue()
+        assertThat(repository.getBook(books.first().id)).isNotNull()
     }
 
     @Test
