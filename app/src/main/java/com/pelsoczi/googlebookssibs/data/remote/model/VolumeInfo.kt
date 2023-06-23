@@ -8,6 +8,7 @@ data class VolumeInfo(
     @SerializedName("title") var title: String = "",
     @SerializedName("authors") var authors: ArrayList<String> = arrayListOf(),
     @SerializedName("publishedDate") var publishedDate: String = "",
+    @SerializedName("publisher") var publisher: String = "",
     @SerializedName("description") var description: String = "",
 //    @SerializedName("industryIdentifiers") var industryIdentifiers: ArrayList<IndustryIdentifiers> = arrayListOf(),
 //    @SerializedName("readingModes") var readingModes: ReadingModes? = ReadingModes(),
