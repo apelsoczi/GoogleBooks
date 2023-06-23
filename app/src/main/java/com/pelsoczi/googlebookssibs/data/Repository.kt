@@ -1,7 +1,8 @@
 package com.pelsoczi.googlebookssibs.data
 
 import androidx.paging.PagingSource.LoadResult
-import com.pelsoczi.googlebookssibs.data.remote.BookItem
+import com.pelsoczi.googlebookssibs.data.local.Book
+import com.pelsoczi.googlebookssibs.data.local.bookFromDTO
 import com.pelsoczi.googlebookssibs.data.remote.NetworkDataSource
 import com.pelsoczi.googlebookssibs.util.isValid
 import com.pelsoczi.googlebookssibs.util.items
@@ -17,14 +18,14 @@ class Repository @Inject constructor(
      */
     suspend fun loadBooks(
         index: Int,
-    ): LoadResult<Int, BookItem> {
+    ): LoadResult<Int, Book> {
         return try {
             val response = networkDataSource.fetch(
                 startIndex = index,
             )
             if (response.isValid()) {
                 LoadResult.Page(
-                    data = response.items,
+                    data = response.items.map { it.bookFromDTO() },
                     prevKey = null,
                     nextKey = if (response.items.isNotEmpty()) response.items.size + index else null
                 )

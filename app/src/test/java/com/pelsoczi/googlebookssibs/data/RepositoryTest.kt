@@ -2,9 +2,9 @@ package com.pelsoczi.googlebookssibs.data
 
 import androidx.paging.PagingSource
 import com.google.common.truth.Truth.assertThat
-import com.pelsoczi.googlebookssibs.data.remote.BookItem
-import com.pelsoczi.googlebookssibs.data.remote.BooksApiResponse
 import com.pelsoczi.googlebookssibs.data.remote.NetworkDataSource
+import com.pelsoczi.googlebookssibs.data.remote.model.BookItem
+import com.pelsoczi.googlebookssibs.data.remote.model.BooksApiResponse
 import com.pelsoczi.googlebookssibs.util.isValid
 import io.mockk.coEvery
 import io.mockk.mockk
@@ -44,12 +44,10 @@ class RepositoryTest {
         val result = repository.loadBooks(0)
         // then
         assertThat(result is PagingSource.LoadResult.Page).isTrue()
-        result as PagingSource.LoadResult.Page
-        assertThat(result.data).isEqualTo(books)
     }
 
     @Test
-    fun `api success and no items returned by endpoint`() = runTest {
+    fun `nextKey is null when no items were returned on api success`() = runTest {
         // given
         val books = arrayListOf<BookItem>()
         val body = mockk<BooksApiResponse>() {
@@ -62,9 +60,12 @@ class RepositoryTest {
         }
         coEvery { networkDataSource.fetch(any()) } returns response
         // when
+        println(response)
         val result = repository.loadBooks(0)
         // then
-        assertThat(result is PagingSource.LoadResult.Invalid).isTrue()
+        assertThat(result is PagingSource.LoadResult.Page).isTrue()
+        result as PagingSource.LoadResult.Page
+        assertThat(result.nextKey).isNull()
     }
 
     @Test

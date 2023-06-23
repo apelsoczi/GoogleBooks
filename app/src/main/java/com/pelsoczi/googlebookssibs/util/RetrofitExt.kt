@@ -1,7 +1,7 @@
 package com.pelsoczi.googlebookssibs.util
 
-import com.pelsoczi.googlebookssibs.data.remote.BookItem
-import com.pelsoczi.googlebookssibs.data.remote.BooksApiResponse
+import com.pelsoczi.googlebookssibs.data.remote.model.BookItem
+import com.pelsoczi.googlebookssibs.data.remote.model.BooksApiResponse
 import retrofit2.Response
 
 /**
