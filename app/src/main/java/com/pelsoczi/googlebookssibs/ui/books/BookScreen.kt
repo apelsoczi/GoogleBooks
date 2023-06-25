@@ -27,7 +27,7 @@ import androidx.paging.compose.LazyPagingItems
 import androidx.paging.compose.collectAsLazyPagingItems
 import coil.compose.AsyncImage
 import com.pelsoczi.googlebookssibs.data.local.Book
-import com.pelsoczi.googlebookssibs.ui.theme.GoogleBooksSIBSNewsTheme
+import com.pelsoczi.googlebookssibs.ui.theme.GoogleBooksSIBSTheme
 import com.pelsoczi.googlebookssibs.ui.theme.Typography
 
 @Composable
@@ -121,7 +121,7 @@ private fun BookViewHolder(
 @Composable
 fun BooksScreenPreview() {
     Surface {
-        GoogleBooksSIBSNewsTheme {
+        GoogleBooksSIBSTheme {
             val book = Book(
                 identifier = "cCHlCwAAQBAJ",
                 title = "OpenCV Android Programming By Example",

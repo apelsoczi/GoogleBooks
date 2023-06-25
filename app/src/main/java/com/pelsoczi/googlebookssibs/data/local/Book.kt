@@ -1,24 +1,29 @@
 package com.pelsoczi.googlebookssibs.data.local
 
+import androidx.room.ColumnInfo
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.pelsoczi.googlebookssibs.data.remote.model.BookItem
 
+@Entity(tableName = "books")
 data class Book(
-    val identifier: String,
-    val title: String,
-    val authors: String,
-    val description: String,
-    val published: String,
-    val publisher: String,
-    val pageCount: Int,
-    val rating: Double,
-    val reviews: Int,
-    val thumbnail: String,
-    val buyLink: String,
-    val amount: Double,
-    val currency: String,
+    @PrimaryKey val id: Int = 0,
+    @ColumnInfo val identifier: String,
+    @ColumnInfo val title: String,
+    @ColumnInfo val authors: String,
+    @ColumnInfo val description: String,
+    @ColumnInfo val published: String,
+    @ColumnInfo val publisher: String,
+    @ColumnInfo val pageCount: Int,
+    @ColumnInfo val rating: Double,
+    @ColumnInfo val reviews: Int,
+    @ColumnInfo val thumbnail: String,
+    @ColumnInfo val buyLink: String,
+    @ColumnInfo val amount: Double,
+    @ColumnInfo val currency: String,
 ) {
-    val forSale: Boolean
-        get() = buyLink.isNotEmpty() && amount > 0.0 && currency.isNotBlank()
+    fun forSale(): Boolean =
+        buyLink.isNotEmpty() && amount > 0.0 && currency.isNotBlank()
 }
 
 fun BookItem.bookFromDTO() = Book(

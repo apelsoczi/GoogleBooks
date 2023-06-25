@@ -34,7 +34,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import com.pelsoczi.googlebookssibs.data.local.Book
-import com.pelsoczi.googlebookssibs.ui.theme.GoogleBooksSIBSNewsTheme
+import com.pelsoczi.googlebookssibs.ui.detail.DetailViewIntent.AddToFavorites
+import com.pelsoczi.googlebookssibs.ui.detail.DetailViewIntent.Purchase
+import com.pelsoczi.googlebookssibs.ui.detail.DetailViewIntent.RemoveFavorite
+import com.pelsoczi.googlebookssibs.ui.theme.GoogleBooksSIBSTheme
 import com.pelsoczi.googlebookssibs.ui.theme.Typography
 
 @Composable
@@ -43,17 +46,20 @@ fun DetailScreen(
     navController: NavController,
 ) {
     val viewState = viewModel.viewState.collectAsStateWithLifecycle()
-    when (val book = viewState.value.book) {
-        null -> navController.popBackStack()
-        else -> DetailScreen(
-            book = book,
+    if (viewState.value != null) {
+        DetailScreen(
+            book = requireNotNull(viewState.value).book,
+            isFavorite = requireNotNull(viewState.value).isFavorite,
+            handle = { viewModel.handle(it) },
         )
     }
 }
 
 @Composable
 fun DetailScreen(
-    book: Book
+    book: Book,
+    isFavorite: Boolean,
+    handle: (DetailViewIntent) -> Unit
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -190,17 +196,24 @@ fun DetailScreen(
             }
         }
 
+        Spacer(modifier = Modifier.height(8.dp))
+
         Row {
+            val favoriteButtonColor = if (isFavorite) Color.DarkGray else Color.Blue
             OutlinedButton(
                 modifier = Modifier.padding(start = 16.dp),
-                border = BorderStroke(1.dp, Color.Blue),
+                border = BorderStroke(1.dp, favoriteButtonColor),
                 onClick = {
-                    println()
+                    if (!isFavorite) handle(AddToFavorites)
+                    else handle(RemoveFavorite)
                 },
             ) {
-                Text(text = "Add to favorites", color = Color.Blue)
+                Text(
+                    text = if (isFavorite) "Remove from favorites" else "Add to favorites",
+                    color = favoriteButtonColor,
+                )
             }
-            if (book.forSale) {
+            if (book.forSale()) {
                 Button(
                     modifier = Modifier.padding(start = 16.dp),
                     colors = ButtonDefaults.buttonColors(
@@ -208,7 +221,7 @@ fun DetailScreen(
                         contentColor = Color.White,
                     ),
                     onClick = {
-                        println()
+                        handle(Purchase)
                     },
                 ) {
                     Text(text = "${book.amount} ${book.currency}")
@@ -241,7 +254,7 @@ fun DetailScreen(
 @Composable
 fun DetailScreenPreview() {
     Surface{
-        GoogleBooksSIBSNewsTheme {
+        GoogleBooksSIBSTheme {
             val book = Book(
                 identifier = "cCHlCwAAQBAJ",
                 title = "OpenCV Android Programming By Example",
@@ -257,7 +270,11 @@ fun DetailScreenPreview() {
                 amount = 21.19,
                 currency = "EUR",
             )
-            DetailScreen(book = book)
+            DetailScreen(
+                book = book,
+                isFavorite = false,
+                handle = {},
+            )
         }
     }
 }

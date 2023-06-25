@@ -1,13 +1,19 @@
 package com.pelsoczi.googlebookssibs.data
 
 import androidx.paging.PagingSource
+import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import com.pelsoczi.googlebookssibs.data.local.BooksDao
+import com.pelsoczi.googlebookssibs.data.local.BooksDatabase
+import com.pelsoczi.googlebookssibs.data.local.bookFromDTO
 import com.pelsoczi.googlebookssibs.data.remote.NetworkDataSource
 import com.pelsoczi.googlebookssibs.data.remote.model.BookItem
 import com.pelsoczi.googlebookssibs.data.remote.model.BooksApiResponse
 import com.pelsoczi.googlebookssibs.util.isValid
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.runTest
 import org.junit.Before
 import org.junit.Test
@@ -17,6 +23,10 @@ import java.net.UnknownHostException
 class RepositoryTest {
 
     private val networkDataSource = mockk<NetworkDataSource>()
+    private val dao = mockk<BooksDao>(relaxed = true)
+    private val database = mockk<BooksDatabase>() {
+        coEvery { booksDao() } returns dao
+    }
 
     lateinit var repository: Repository
 
@@ -24,6 +34,7 @@ class RepositoryTest {
     fun setUp() {
         repository = Repository(
             networkDataSource = networkDataSource,
+            database = database,
         )
     }
 
@@ -44,7 +55,9 @@ class RepositoryTest {
         val result = repository.loadBooks(0)
         // then
         assertThat(result is PagingSource.LoadResult.Page).isTrue()
-        assertThat(repository.getBook(books.first().id)).isNotNull()
+        result as PagingSource.LoadResult.Page
+        assertThat(result.data.first().equals(books.first().bookFromDTO()))
+        assertThat(repository.cachedBook(books.first().id))
     }
 
     @Test
@@ -66,6 +79,7 @@ class RepositoryTest {
         // then
         assertThat(result is PagingSource.LoadResult.Page).isTrue()
         result as PagingSource.LoadResult.Page
+        assertThat(result.data).isEmpty()
         assertThat(result.nextKey).isNull()
     }
 
@@ -82,6 +96,42 @@ class RepositoryTest {
         val result = repository.loadBooks(0)
         // then
         assertThat(result is PagingSource.LoadResult.Error).isTrue()
+    }
+
+    @Test
+    fun `insert favorite book`() = runTest {
+        // given
+        val book = BookItem(id = "6DiXzQEACAAJ").bookFromDTO()
+        coEvery { dao.getBook(any()) } returns flowOf(book)
+        // when
+        repository.isBookFavorited(book).test {
+            repository.addFavorite(book)
+            // then
+            awaitItem().let {
+                assertThat(it).isTrue()
+            }
+            awaitComplete()
+        }
+        coVerify { dao.addFavorite(book) }
+        coVerify { dao.getBook(book.identifier) }
+    }
+
+    @Test
+    fun `delete favorite book`() = runTest {
+        // given
+        val book = BookItem(id = "6DiXzQEACAAJ").bookFromDTO()
+        coEvery { dao.getBook(any()) } returns flowOf(null)
+        // when
+        repository.isBookFavorited(book).test {
+            repository.removeFavorite(book)
+            // then
+            awaitItem().let {
+                assertThat(it).isFalse()
+            }
+            awaitComplete()
+        }
+        coVerify { dao.removeFavorite(book) }
+        coVerify { dao.getBook(book.identifier) }
     }
 
 }
