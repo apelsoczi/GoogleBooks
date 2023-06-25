@@ -12,6 +12,9 @@ interface BooksDao {
     @Query("SELECT * FROM books")
     suspend fun getAll(): List<Book>
 
+    @Query("SELECT * FROM books")
+    fun all(): Flow<List<Book>>
+
     @Query("SELECT * FROM books WHERE :identifier LIKE identifier")
     fun getBook(identifier: String): Flow<Book?>
 

@@ -7,8 +7,7 @@ import com.pelsoczi.googlebookssibs.data.remote.model.BookItem
 
 @Entity(tableName = "books")
 data class Book(
-    @PrimaryKey val id: Int = 0,
-    @ColumnInfo val identifier: String,
+    @PrimaryKey @ColumnInfo val identifier: String,
     @ColumnInfo val title: String,
     @ColumnInfo val authors: String,
     @ColumnInfo val description: String,

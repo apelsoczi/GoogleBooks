@@ -73,4 +73,8 @@ class Repository @Inject constructor(
             .map { it != null }
     }
 
+    fun favorites(): Flow<List<Book>> {
+        return daoBooks.all()
+    }
+
 }

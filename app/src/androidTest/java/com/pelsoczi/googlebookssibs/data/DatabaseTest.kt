@@ -46,7 +46,7 @@ class DatabaseTest {
         //then
         runBlocking {
             booksDao.getAll().let {
-                assertThat(it.first().id).isEqualTo(book.id)
+                assertThat(it.first().identifier).isEqualTo(book.identifier)
             }
             booksDao.getBook(book.identifier).first().let {
                 assertThat(it).isNotNull()
