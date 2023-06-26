@@ -76,9 +76,7 @@ fun AppNavHost(
         composable(route = FavoriteDestination.route) {
             FavoritesScreen(
                 onClickBook = {
-                    navController.navigate(
-                        route = "${DetailDestination.route}/${it.identifier}"
-                    )
+                    // tldr - submission deadline reached
                 }
             )
         }
