@@ -1,6 +1,5 @@
 package com.pelsoczi.googlebookssibs.data
 
-import androidx.paging.PagingSource
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
 import com.pelsoczi.googlebookssibs.data.local.BooksDao
@@ -54,8 +53,8 @@ class RepositoryTest {
         // when
         val result = repository.loadBooks(0)
         // then
-        assertThat(result is PagingSource.LoadResult.Page).isTrue()
-        result as PagingSource.LoadResult.Page
+        assertThat(result is LoadResult.Page).isTrue()
+        result as LoadResult.Page
         assertThat(result.data.first().equals(books.first().bookFromDTO()))
         assertThat(repository.cachedBook(books.first().id))
     }
@@ -77,8 +76,8 @@ class RepositoryTest {
         println(response)
         val result = repository.loadBooks(0)
         // then
-        assertThat(result is PagingSource.LoadResult.Page).isTrue()
-        result as PagingSource.LoadResult.Page
+        assertThat(result is LoadResult.Page).isTrue()
+        result as LoadResult.Page
         assertThat(result.data).isEmpty()
         assertThat(result.nextKey).isNull()
     }
@@ -95,14 +94,14 @@ class RepositoryTest {
         // when
         val result = repository.loadBooks(0)
         // then
-        assertThat(result is PagingSource.LoadResult.Error).isTrue()
+        assertThat(result is LoadResult.Error).isTrue()
     }
 
     @Test
     fun `insert favorite book`() = runTest {
         // given
         val book = BookItem(id = "6DiXzQEACAAJ").bookFromDTO()
-        coEvery { dao.getBook(any()) } returns flowOf(book)
+        coEvery { dao.book(any()) } returns flowOf(book)
         // when
         repository.isBookFavorited(book).test {
             repository.addFavorite(book)
@@ -113,14 +112,14 @@ class RepositoryTest {
             awaitComplete()
         }
         coVerify { dao.addFavorite(book) }
-        coVerify { dao.getBook(book.identifier) }
+        coVerify { dao.book(book.identifier) }
     }
 
     @Test
     fun `delete favorite book`() = runTest {
         // given
         val book = BookItem(id = "6DiXzQEACAAJ").bookFromDTO()
-        coEvery { dao.getBook(any()) } returns flowOf(null)
+        coEvery { dao.book(any()) } returns flowOf(null)
         // when
         repository.isBookFavorited(book).test {
             repository.removeFavorite(book)
@@ -131,7 +130,7 @@ class RepositoryTest {
             awaitComplete()
         }
         coVerify { dao.removeFavorite(book) }
-        coVerify { dao.getBook(book.identifier) }
+        coVerify { dao.book(book.identifier) }
     }
 
 }

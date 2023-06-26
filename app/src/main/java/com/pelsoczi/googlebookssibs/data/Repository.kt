@@ -1,6 +1,5 @@
 package com.pelsoczi.googlebookssibs.data
 
-import androidx.paging.PagingSource.LoadResult
 import com.pelsoczi.googlebookssibs.data.local.Book
 import com.pelsoczi.googlebookssibs.data.local.BooksDatabase
 import com.pelsoczi.googlebookssibs.data.local.bookFromDTO
@@ -19,15 +18,18 @@ class Repository @Inject constructor(
     private val daoBooks = database.booksDao()
 
     /** cache the pages loaded */
-    private val pageCache = mutableListOf<LoadResult.Page<Int, Book>>()
+    private val pageCache = mutableListOf<LoadResult.Page>()
 
     /**
-     * Fetch data from the api endpoint
-     * @return the books fetched from the api service
+     * Fetches the data from the repository and returns the load result, or invalidates
+     * from loading further data if params.key is null - we have reached end of list
+     * from the server.
+     *
+     * @return the load result fetching from the api service
      */
     suspend fun loadBooks(
         index: Int,
-    ): LoadResult<Int, Book> {
+    ): LoadResult {
         return try {
             val response = networkDataSource.fetch(
                 startIndex = index,
@@ -35,13 +37,12 @@ class Repository @Inject constructor(
             if (response.isValid()) {
                 LoadResult.Page(
                     data = response.items.map { it.bookFromDTO() },
-                    prevKey = null,
                     nextKey = if (response.items.isNotEmpty()) response.items.size + index else null
                 ).also {
                     pageCache.add(it)
                 }
             } else {
-                LoadResult.Invalid()
+                LoadResult.Invalid
             }
         } catch (e: Exception) {
             LoadResult.Error(e)
@@ -69,7 +70,7 @@ class Repository @Inject constructor(
      * @return `true` when the book is in the database, `false` otherwise
      */
     fun isBookFavorited(book: Book): Flow<Boolean> {
-        return daoBooks.getBook(book.identifier)
+        return daoBooks.book(book.identifier)
             .map { it != null }
     }
 

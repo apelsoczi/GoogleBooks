@@ -1,5 +1,12 @@
 package com.pelsoczi.googlebookssibs.ui.detail
 
+import android.content.Context
+import android.content.Intent
+import android.content.Intent.ACTION_VIEW
+import android.content.Intent.CATEGORY_BROWSABLE
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
+import android.content.Intent.FLAG_ACTIVITY_REQUIRE_NON_BROWSER
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -10,6 +17,7 @@ import com.pelsoczi.googlebookssibs.ui.detail.DetailViewIntent.Purchase
 import com.pelsoczi.googlebookssibs.ui.detail.DetailViewIntent.RemoveFavorite
 import com.pelsoczi.googlebookssibs.ui.navigation.NavigationDestination.DetailDestination.ARG_ID
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,8 +32,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DetailViewModel @Inject constructor(
-    savedStateHandle: SavedStateHandle,
     private val repository: Repository,
+    @ApplicationContext private val context: Context,
+    savedStateHandle: SavedStateHandle,
 ) : ViewModel() {
 
     private val book: Book = repository.cachedBook(
@@ -50,7 +59,7 @@ class DetailViewModel @Inject constructor(
         when (intent) {
             AddToFavorites -> toggleFavorite()
             RemoveFavorite -> toggleFavorite()
-            Purchase -> {}
+            Purchase -> openLink()
         }
     }
 
@@ -58,6 +67,16 @@ class DetailViewModel @Inject constructor(
         val isFavorite = repository.isBookFavorited(book).first()
         if (isFavorite) repository.removeFavorite(book)
         else repository.addFavorite(book)
+    }
+
+    private fun openLink() {
+        if (book.forSale()) {
+            val intent = Intent(ACTION_VIEW, Uri.parse(book.buyLink)).apply {
+                addCategory(CATEGORY_BROWSABLE)
+                flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_REQUIRE_NON_BROWSER
+            }
+            context.startActivity(intent)
+        }
     }
 
 }

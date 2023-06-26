@@ -16,7 +16,7 @@ interface BooksDao {
     fun all(): Flow<List<Book>>
 
     @Query("SELECT * FROM books WHERE :identifier LIKE identifier")
-    fun getBook(identifier: String): Flow<Book?>
+    fun book(identifier: String): Flow<Book?>
 
     @Insert
     fun addFavorite(book: Book)

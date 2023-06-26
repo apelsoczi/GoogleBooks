@@ -1,12 +1,12 @@
 package com.pelsoczi.googlebookssibs.ui.books
 
-import androidx.paging.PagingSource.LoadParams
-import androidx.paging.PagingSource.LoadResult
+import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
+import com.pelsoczi.googlebookssibs.data.LoadResult
 import com.pelsoczi.googlebookssibs.data.Repository
-import com.pelsoczi.googlebookssibs.data.local.Book
 import com.pelsoczi.googlebookssibs.data.local.bookFromDTO
 import com.pelsoczi.googlebookssibs.data.remote.model.BookItem
+import com.pelsoczi.googlebookssibs.ui.books.BooksViewIntent.LoadNext
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -18,12 +18,10 @@ class BooksViewModelTest {
 
     private val repository = mockk<Repository>()
 
-    lateinit var pagingSourceController: PagingSourceController
     lateinit var viewModel: BooksViewModel
 
     @Before
     fun setUp() = runTest {
-        pagingSourceController = PagingSourceController(repository)
         viewModel = BooksViewModel(
             repository = repository,
         )
@@ -32,62 +30,79 @@ class BooksViewModelTest {
     @Test
     fun `error load result when server response results in exception`() = runTest {
         // given
-        val refresh = LoadParams.Refresh(0, 60, true)
-        val error = LoadResult.Error<Int, Book>(mockk())
+        val error = LoadResult.Error(mockk())
         coEvery { repository.loadBooks(any()) } returns error
         // when
-        val loadResult = viewModel.load(refresh)
-        // then
-        assertThat(loadResult).isEqualTo(error)
-        coVerify { repository.loadBooks(refresh.key!!) }
+        viewModel.viewState.test {
+            viewModel.handle(LoadNext)
+            // then
+            skipItems(1)
+            awaitItem().let {
+                assertThat(it.nextKey).isNull()
+                assertThat(it.books).isEmpty()
+                assertThat(it.error).isTrue()
+                assertThat(it.invalid).isFalse()
+            }
+        }
+        coVerify { repository.loadBooks(0) }
     }
 
     @Test
     fun `invalid load result when server response is not valid`() = runTest {
         // given
-        val refresh = LoadParams.Refresh(0, 60, true)
-        val invalid = LoadResult.Invalid<Int, Book>()
+        val invalid = LoadResult.Invalid
         coEvery { repository.loadBooks(any()) } returns invalid
         // when
-        val loadResult = viewModel.load(refresh)
-        // then
-        assertThat(loadResult).isEqualTo(invalid)
-        coVerify { repository.loadBooks(refresh.key!!) }
+        viewModel.viewState.test {
+            viewModel.handle(LoadNext)
+            // then
+            skipItems(1)
+            awaitItem().let {
+                assertThat(it.nextKey).isNull()
+                assertThat(it.books).isEmpty()
+                assertThat(it.error).isFalse()
+                assertThat(it.invalid).isTrue()
+            }
+        }
+        coVerify { repository.loadBooks(0) }
     }
 
     @Test
-    fun `page load result and next key when server response is valid`() = runTest {
+    fun `server response with items to load and reaches end of items to load`() = runTest {
         // given
-        val refresh = LoadParams.Refresh(0, 60, true)
-        val page = LoadResult.Page<Int, Book>(
+        val page = LoadResult.Page(
             data = listOf(BookItem().bookFromDTO()),
-            prevKey = null,
             nextKey = 1
         )
         coEvery { repository.loadBooks(any()) } returns page
         // when
-        val loadResult = viewModel.load(refresh)
-        // then
-        assertThat(loadResult).isEqualTo(page)
-        coVerify { repository.loadBooks(refresh.key!!) }
-    }
-
-    @Test
-    fun `invalid load result when server response valid without more items to load`() = runTest {
-        // given
-        val refresh = LoadParams.Refresh(0, 60, true)
-        val page = LoadResult.Page<Int, Book>(
-            data = emptyList(),
-            prevKey = null,
-            nextKey = null
-        )
-        coEvery { repository.loadBooks(any()) } returns page
-        // when
-        val loadResult = viewModel.load(refresh)
-        // then
-        assertThat(loadResult).isNotEqualTo(page)
-        assertThat(loadResult is LoadResult.Error<Int, Book>)
-        coVerify { repository.loadBooks(refresh.key!!) }
+        viewModel.viewState.test {
+            viewModel.handle(LoadNext)
+            // then
+            skipItems(1)
+            awaitItem().let {
+                assertThat(it.nextKey).isEqualTo(page.nextKey)
+                assertThat(it.books).isEqualTo(page.data)
+                assertThat(it.error).isFalse()
+                assertThat(it.invalid).isFalse()
+            }
+            // and given
+            val page2 = page.copy(
+                data = emptyList(),
+                nextKey = null,
+            )
+            coEvery { repository.loadBooks(any()) } returns page2
+            // and when
+            viewModel.handle(LoadNext)
+            // and then
+            awaitItem().let {
+                assertThat(it.nextKey).isNull()
+                assertThat(it.books).isEqualTo(page.data)
+                assertThat(it.error).isFalse()
+                assertThat(it.invalid).isFalse()
+            }
+        }
+        coVerify(atMost = 1) { repository.loadBooks(0) }
     }
 
 }

@@ -1,5 +1,6 @@
 package com.pelsoczi.googlebookssibs.ui.detail
 
+import android.content.Context
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
 import com.google.common.truth.Truth.assertThat
@@ -19,6 +20,7 @@ class DetailViewModelTest {
 
     private val savedStateHandle = mockk<SavedStateHandle>()
     private val repository = mockk<Repository>()
+    private val context = mockk<Context>()
 
     private lateinit var detailViewModel: DetailViewModel
 
@@ -31,6 +33,7 @@ class DetailViewModelTest {
         detailViewModel = DetailViewModel(
             savedStateHandle = SavedStateHandle(mapOf(ARG_ID to "6DQACwAAQBAJ")),
             repository = repository,
+            context = context,
         )
         detailViewModel.viewState.test {
             // then
@@ -58,6 +61,7 @@ class DetailViewModelTest {
         detailViewModel = DetailViewModel(
             savedStateHandle = SavedStateHandle(mapOf(ARG_ID to "6DQACwAAQBAJ")),
             repository = repository,
+            context = context,
         )
         detailViewModel.viewState.test {
             // then

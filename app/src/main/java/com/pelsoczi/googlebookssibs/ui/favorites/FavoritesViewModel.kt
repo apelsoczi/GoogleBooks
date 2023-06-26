@@ -7,6 +7,7 @@ import com.pelsoczi.googlebookssibs.data.local.Book
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -17,7 +18,7 @@ class FavoritesViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val _viewState = MutableStateFlow(emptyList<Book>())
-    val viewState = _viewState.asStateFlow()
+    val viewState: StateFlow<List<Book>> = _viewState.asStateFlow()
 
     init {
         viewModelScope.launch(Dispatchers.IO) {

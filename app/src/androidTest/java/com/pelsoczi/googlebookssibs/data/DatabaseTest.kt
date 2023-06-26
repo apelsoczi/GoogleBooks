@@ -48,7 +48,7 @@ class DatabaseTest {
             booksDao.getAll().let {
                 assertThat(it.first().identifier).isEqualTo(book.identifier)
             }
-            booksDao.getBook(book.identifier).first().let {
+            booksDao.book(book.identifier).first().let {
                 assertThat(it).isNotNull()
                 assertThat(it?.identifier).isEqualTo(book.identifier)
             }
@@ -67,7 +67,7 @@ class DatabaseTest {
             booksDao.getAll().let {
                 assertThat(it).isEmpty()
             }
-            booksDao.getBook(book.identifier).first().let {
+            booksDao.book(book.identifier).first().let {
                 assertThat(it).isNull()
             }
         }
